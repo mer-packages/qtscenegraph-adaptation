@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.
 **
@@ -70,11 +70,6 @@ private:
 
     float m_stable_vsync;
     float m_current_animation_time;
-    float m_current_animation_delay;
-    float m_current_animation_catchup;
-
-    float m_threshold_for_catchup;
-    float m_catchup_ratio;
 };
 
 }

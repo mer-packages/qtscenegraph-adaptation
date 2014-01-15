@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.
 **
@@ -76,7 +76,9 @@ public:
 
     QAnimationDriver *createAnimationDriver(QObject *parent);
     QSGRenderer *createRenderer();
+#ifdef CUSTOMCONTEXT_SURFACEFORMAT
     QSurfaceFormat defaultSurfaceFormat() const;
+#endif
     QSGTexture *createTexture(const QImage &image) const;
     QQuickTextureFactory *createTextureFactory(const QImage &image);
 
