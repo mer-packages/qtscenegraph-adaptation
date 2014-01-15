@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.
 **
@@ -91,7 +91,7 @@ Context::Context(QObject *parent)
     , m_sampleCount(0)
     , m_useMultisampling(false)
 {
-    m_useMultisampling = qgetenv("CUSTOMCONTEXT_NO_MULTISAMPLE").isEmpty();
+    m_useMultisampling = !qgetenv("CUSTOMCONTEXT_MULTISAMPLE").isEmpty();
     if (m_useMultisampling) {
         m_sampleCount= 16;
         QByteArray overrideSamples = qgetenv("CUSTOMCONTEXT_MULTISAMPLE_COUNT");
@@ -312,7 +312,7 @@ void Context::invalidate()
 }
 
 
-
+#ifdef CUSTOMCONTEXT_SURFACEFORMAT
 QSurfaceFormat Context::defaultSurfaceFormat() const
 {
     QSurfaceFormat format;
@@ -323,6 +323,7 @@ QSurfaceFormat Context::defaultSurfaceFormat() const
         format.setSamples(m_sampleCount);
     return format;
 }
+#endif
 
 
 
