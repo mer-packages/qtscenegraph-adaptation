@@ -18,11 +18,8 @@ BuildRequires:  qt5-qtv8-devel
 BuildRequires:  fdupes
 
 %description
-Qt is a cross-platform application and UI framework. Using Qt, you can
-write web-enabled applications once and deploy them across desktop,
-mobile and embedded systems without rewriting the source code.
-.
-This package contains the Qt location module
+This package contains system specific changes for the
+Qt Quick Scene Graph.
 
 #### Build section
 
@@ -31,7 +28,7 @@ This package contains the Qt location module
 
 %build
 export QTDIR=/usr/share/qt5
-%qmake5 "CONFIG+= atlastexture overlaprenderer"
+%qmake5 -config "animationdriver"
 
 %install
 rm -rf %{buildroot}
@@ -48,12 +45,8 @@ rm -rf %{buildroot}
 
 
 #### File section
-
-
 %files
 %defattr(-,root,root,-)
-%{_libdir}/qt5/imports/Animators/libanimators.so
-%{_libdir}/qt5/imports/Animators/qmldir
 %{_libdir}/qt5/plugins/scenegraph/libcustomcontext.so
 
 

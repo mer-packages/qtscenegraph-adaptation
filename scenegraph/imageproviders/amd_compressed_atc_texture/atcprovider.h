@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.
@@ -39,59 +39,50 @@
 **
 ****************************************************************************/
 
-#include <QtCore/QDebug>
-#include <QtGui/QGuiApplication>
-#include <QtQml/QQmlContext>
-#include <QtQuick/QQuickView>
+#ifndef ATCPROVIDER_H
+#define ATCPROVIDER_H
 
-class Engine : public QObject
+#include <qopengl.h>
+#include <QQuickImageProvider>
+#include <QtQuick/QSGTexture>
+#include <QUrl>
+
+class AtcProvider : public QQuickImageProvider
 {
-    Q_OBJECT
-
-    Q_PROPERTY(QString source READ source CONSTANT)
 public:
+    AtcProvider()
+        : QQuickImageProvider(QQuickImageProvider::Texture)
+    {}
 
-    QString source() const { return m_source; }
-    void setSource(const QString &src) { m_source = src; }
+    QQuickTextureFactory *requestTexture(const QString &id, QSize *size, const QSize &requestedSize);
+
+    void setBaseUrl(const QUrl &base);
 
 private:
-    QString m_source;
+    QUrl m_baseUrl;
 };
 
-void printHelp() {
-    qDebug("Usage:\n"
-           " > maskmaker [options] filename\n"
-           "\n"
-           "Options:\n"
-           " -h     --help              This help..");
-}
-
-int main(int argc, char **argv)
+class AtcTexture : public QSGTexture
 {
-    QGuiApplication app(argc, argv);
+    Q_OBJECT
+public:
+    AtcTexture();
+    ~AtcTexture();
 
-    Engine engine;
+    void bind();
 
-    QStringList args = app.arguments();
+    QSize textureSize() const { return m_size; }
+    int textureId() const;
 
-    for (int i=0; i<args.size(); ++i) {
-        if (args.at(i) == QStringLiteral("--help") || args.at(i) == QStringLiteral("-h")) {
-            printHelp();
-            return 0;
-        } else if (i == args.size() - 1 && i > 0) {
-            engine.setSource(args.at(i));
-        }
-    }
+    bool hasAlphaChannel() const;
+    bool hasMipmaps() const { return false; }
 
-    QQuickView view;
-    view.rootContext()->setContextProperty("engine", &engine);
-    view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setSource(QUrl("qrc:/Main.qml"));
-    view.show();
+    QByteArray m_data;
+    QSize m_size;
+    GLuint m_sizeInBytes;
+    GLuint m_texture_id;
+    GLenum m_glFormat;
+    bool m_uploaded;
+};
 
-    QObject::connect((QObject *) view.engine(), SIGNAL(quit()), &app, SLOT(quit()));
-
-    app.exec();
-}
-
-#include "maskmaker.moc"
+#endif // ATCPROVIDER_H

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Corporation and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.
 **
@@ -39,59 +39,54 @@
 **
 ****************************************************************************/
 
-#include <QtCore/QDebug>
-#include <QtGui/QGuiApplication>
-#include <QtQml/QQmlContext>
-#include <QtQuick/QQuickView>
+import QtQuick 2.0
 
-class Engine : public QObject
-{
-    Q_OBJECT
+Rectangle {
 
-    Q_PROPERTY(QString source READ source CONSTANT)
-public:
+    id: root
 
-    QString source() const { return m_source; }
-    void setSource(const QString &src) { m_source = src; }
+    width: 1500
+    height: 900
 
-private:
-    QString m_source;
-};
+    property real itemSize: 20
+    property int rows: height / itemSize - 2;
+    property int cols: width / itemSize - 2;
 
-void printHelp() {
-    qDebug("Usage:\n"
-           " > maskmaker [options] filename\n"
-           "\n"
-           "Options:\n"
-           " -h     --help              This help..");
-}
+    gradient: Gradient {
+        GradientStop { position: 0; color: "steelblue" }
+        GradientStop { position: 1; color: "black" }
+    }
 
-int main(int argc, char **argv)
-{
-    QGuiApplication app(argc, argv);
+    Repeater {
 
-    Engine engine;
+        model: root.rows * root.cols
 
-    QStringList args = app.arguments();
+        onModelChanged: if (model != 0) print("Populating with " + model + " items...");
 
-    for (int i=0; i<args.size(); ++i) {
-        if (args.at(i) == QStringLiteral("--help") || args.at(i) == QStringLiteral("-h")) {
-            printHelp();
-            return 0;
-        } else if (i == args.size() - 1 && i > 0) {
-            engine.setSource(args.at(i));
+        Image {
+            width: root.itemSize
+            height: root.itemSize
+
+            sourceSize: Qt.size(width, height);
+            source: "icon" + (1 + index % 4) + ".png"
+
+            property int xPos: ((index % cols) + 1) * root.itemSize;
+            property int yPos: (Math.floor(index / cols) + 1) * root.itemSize;
+            x: xPos + shift
+            y: yPos + shift
+
+            property real shift: -10
+            SequentialAnimation on shift {
+                PauseAnimation { duration: index * 3; }
+                SequentialAnimation {
+                    NumberAnimation { to: 10; duration: 1000; easing.type: Easing.InOutSine }
+                    NumberAnimation { to: -10; duration: 1000; easing.type: Easing.InOutSine }
+                    loops: Animation.Infinite
+                }
+            }
+
+
         }
     }
 
-    QQuickView view;
-    view.rootContext()->setContextProperty("engine", &engine);
-    view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setSource(QUrl("qrc:/Main.qml"));
-    view.show();
-
-    QObject::connect((QObject *) view.engine(), SIGNAL(quit()), &app, SLOT(quit()));
-
-    app.exec();
 }
-
-#include "maskmaker.moc"
