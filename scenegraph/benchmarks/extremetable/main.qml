@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
+** Contact: http://www.qt-project.org/
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.
 **
@@ -42,46 +42,82 @@
 import QtQuick 2.0
 
 Rectangle {
-    width: 1920
-    height: 1080
+    id: root
 
-    property int frame: 0
+    width: 1500
+    height: 900
 
-    Row {
-        anchors.horizontalCenter: parent.horizontalCenter
-        height: parent.height
-        Repeater {
-            model: 10
-            ContactList {}
+    gradient: Gradient {
+        GradientStop { position: 0; color: "steelblue" }
+        GradientStop { position: 1; color: "black" }
+    }
+
+    GridView {
+        id: grid
+
+        model: 100000
+
+        anchors.fill: parent
+
+        cellWidth: 50
+        cellHeight: 20
+
+        clip: true
+
+        delegate: Item {
+
+            width: grid.cellWidth
+            height: grid.cellHeight
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: 2
+
+                gradient: Gradient {
+                    GradientStop { position: 0; color: "white"; }
+                    GradientStop { position: 1; color: "lightsteelblue" }
+                }
+
+                Text {
+                    text: index
+                    anchors.centerIn: parent
+                }
+            }
         }
     }
 
-    Timer {
-        id: fpsTimer
-        property real fps: 0
-        repeat: true
-        running: true
-        interval: 1000
-        onTriggered: {
-            fps = frame
-            frame = 0
+    Rectangle {
+        id: box
+        color: Qt.rgba(1, 1, 1, 0.5);
+        border.width: 5
+        border.color: Qt.rgba(0, 0, 0, 0.5);
+        radius: 20
+
+        width: label.width + 50
+        height: label.height + 50
+
+        clip: true;
+
+        SequentialAnimation on x {
+            NumberAnimation { to: root.width - box.width; duration: 8047 }
+            NumberAnimation { to: 0; duration: 8047 }
+            loops: Animation.Infinite
+        }
+
+        SequentialAnimation on y {
+            NumberAnimation { from: 0; to: root.height - box.height; duration: 5713 }
+            NumberAnimation { from: root.height - box.height; to: 0; duration: 5713 }
+            loops: Animation.Infinite
+        }
+
+        Text {
+            id: label
+            anchors.centerIn: parent
+            text: "This is Qt!\nIsn't it neat?"
+            font.pixelSize: 60
+            style: Text.Raised
+            color: "black"
         }
     }
 
-    property real t
-
-    NumberAnimation on t {
-        from: 0
-        to: 100
-        loops: Animation.Infinite
-        running: true
-    }
-
-    onTChanged: {
-        ++frame
-    }
-
-    Text {
-        text: "Frame rate: " + fpsTimer.fps + "Hz"
-    }
 }
