@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-** Copyright (C) 2013 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
+** Copyright (C) 2014 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.

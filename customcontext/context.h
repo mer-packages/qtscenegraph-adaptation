@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2014 Jolla Ltd, author: <gunnar.sletta@jollamobile.com>
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the Scenegraph Playground module of the Qt Toolkit.
@@ -62,7 +63,27 @@
 namespace CustomContext
 {
 
+#if QT_VERSION >= 0x050200
+class RenderContext : public QSGRenderContext
+{
+public:
+    RenderContext(QSGContext *ctx);
+    void initialize(QOpenGLContext *context);
+    void invalidate();
+    void renderNextFrame(QSGRenderer *renderer, GLuint fbo);
+    QSGTexture *createTexture(const QImage &image) const;
+    QSGRenderer *createRenderer();
 
+#ifdef PROGRAM_BINARY
+    void compile(QSGMaterialShader *shader, QSGMaterial *material, const char *vertex, const char *fragment);
+#endif
+
+#ifdef CUSTOMCONTEXT_DITHER
+    bool m_dither;
+    OrderedDither2x2 *m_ditherProgram;
+#endif
+};
+#endif
 
 class Context : public QSGContext
 {
@@ -70,16 +91,20 @@ class Context : public QSGContext
 public:
     explicit Context(QObject *parent = 0);
 
+#if QT_VERSION >= 0x050200
+    QSGRenderContext *createRenderContext() { return new RenderContext(this); }
+#else
     void initialize(QOpenGLContext *context);
     void invalidate();
     void renderNextFrame(QSGRenderer *renderer, GLuint fbo);
+    QSGTexture *createTexture(const QImage &image) const;
+    QSGRenderer *createRenderer();
+#endif
 
     QAnimationDriver *createAnimationDriver(QObject *parent);
-    QSGRenderer *createRenderer();
 #ifdef CUSTOMCONTEXT_SURFACEFORMAT
     QSurfaceFormat defaultSurfaceFormat() const;
 #endif
-    QSGTexture *createTexture(const QImage &image) const;
     QQuickTextureFactory *createTextureFactory(const QImage &image);
 
 #ifdef CUSTOMCONTEXT_MSAA
@@ -101,6 +126,8 @@ private:
     bool m_materialPreloading;
 #endif
 
+#if QT_VERSION < 0x50200
+
 #ifdef CUSTOMCONTEXT_DITHER
     bool m_dither;
     OrderedDither2x2 *m_ditherProgram;
@@ -110,14 +137,6 @@ private:
     bool m_overlapRenderer;
     QOpenGLShaderProgram *m_clipProgram;
     int m_clipMatrixID;
-#endif
-
-#ifdef CUSTOMCONTEXT_ANIMATIONDRIVER
-    bool m_animationDriver;
-#endif
-
-#ifdef CUSTOMCONTEXT_SWAPLISTENINGANIMATIONDRIVER
-    bool m_swapListeningAnimationDriver;
 #endif
 
 #ifdef CUSTOMCONTEXT_ATLASTEXTURE
@@ -134,9 +153,19 @@ private:
     bool m_threadUploadTexture;
 #endif
 
+#endif // Qt < 5.2.0
+
 #ifdef CUSTOMCONTEXT_NONPRESERVEDTEXTURE
     bool m_nonPreservedTexture;
     friend class NonPreservedTextureFactory;
+#endif
+
+#ifdef CUSTOMCONTEXT_ANIMATIONDRIVER
+    bool m_animationDriver;
+#endif
+
+#ifdef CUSTOMCONTEXT_SWAPLISTENINGANIMATIONDRIVER
+    bool m_swapListeningAnimationDriver;
 #endif
 
 #ifdef CUSTOMCONTEXT_MSAA

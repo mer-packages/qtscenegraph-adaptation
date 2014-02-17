@@ -8,13 +8,9 @@ URL:        http://qt.nokia.com
 Source0:    %{name}-%{version}.tar.bz2
 BuildRequires:  qt5-qtcore-devel
 BuildRequires:  qt5-qtgui-devel
-BuildRequires:  qt5-qtwidgets-devel
-BuildRequires:  qt5-qtopengl-devel
-BuildRequires:  qt5-qtnetwork-devel
 BuildRequires:  qt5-qtdeclarative-devel
 BuildRequires:  qt5-qtdeclarative-qtquick-devel
 BuildRequires:  qt5-qmake
-BuildRequires:  qt5-qtv8-devel
 BuildRequires:  fdupes
 
 %description
@@ -24,7 +20,7 @@ Qt Quick Scene Graph.
 #### Build section
 
 %prep
-%setup -q -n %{name}-%{version}/scenegraph
+%setup -q -n %{name}-%{version}
 
 %build
 export QTDIR=/usr/share/qt5
